@@ -17,20 +17,15 @@ export default function DaosPage() {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#050816] text-slate-100">
-      <SiteHeader />
+      <SiteHeader breadcrumbs={[{ label: "DAOs" }]} />
       <main className="flex-1 py-8">
         <Container>
           <div className="mb-6 space-y-2">
-            <p className="text-xs font-mono uppercase tracking-[0.25em] text-emerald-300/80">
-              Vetra · Mendoza Testnet
-            </p>
             <h1 className="text-2xl font-semibold text-slate-50 sm:text-3xl">
-              DAOs registered in Roxium DAO Ops
+              DAOs
             </h1>
             <p className="max-w-2xl text-sm text-slate-300">
-              From this view you can create new DAOs and explore the ones
-              already persisted on Vetra through the RoxiumLabs backend. Each
-              DAO acts as a container for on-chain proposals and tasks.
+              Create and manage DAOs with their proposals and tasks on Vetra.
             </p>
           </div>
 

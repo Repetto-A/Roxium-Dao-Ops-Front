@@ -1,0 +1,121 @@
+"use client";
+
+import type { Proposal, Task } from "@/lib/vetra/types";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+} from "@/components/ui/card";
+import { getStatusVariant, getStatusLabel } from "@/lib/status";
+
+export interface BoardSummaryProps {
+  proposals: Proposal[];
+  tasks: Task[];
+}
+
+export function BoardSummary({ proposals, tasks }: BoardSummaryProps) {
+  // Count proposals by status
+  const proposalCounts = {
+    DRAFT: proposals.filter((p) => (p.status ?? "DRAFT") === "DRAFT").length,
+    OPEN: proposals.filter((p) => p.status === "OPEN").length,
+    CLOSED: proposals.filter((p) => p.status === "CLOSED").length,
+    ARCHIVED: proposals.filter((p) => p.status === "ARCHIVED").length,
+  };
+
+  // Count tasks by status
+  const taskCounts = {
+    TODO: tasks.filter((t) => (t.status ?? "TODO") === "TODO").length,
+    IN_PROGRESS: tasks.filter((t) => t.status === "IN_PROGRESS").length,
+    DONE: tasks.filter((t) => t.status === "DONE").length,
+  };
+
+  return (
+    <Card className="border-white/10 bg-black/40">
+      <CardHeader>
+        <CardTitle className="text-base">Board Overview</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-3 text-xs sm:flex-row sm:items-center sm:gap-6">
+          {/* Proposals summary */}
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-slate-300">
+              Proposals ({proposals.length}):
+            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              {proposalCounts.DRAFT > 0 && (
+                <Badge
+                  variant={getStatusVariant("DRAFT") as "status-draft"}
+                  className="text-[10px] uppercase tracking-[0.16em]"
+                >
+                  {proposalCounts.DRAFT} {getStatusLabel("DRAFT")}
+                </Badge>
+              )}
+              {proposalCounts.OPEN > 0 && (
+                <Badge
+                  variant={getStatusVariant("OPEN") as "status-open"}
+                  className="text-[10px] uppercase tracking-[0.16em]"
+                >
+                  {proposalCounts.OPEN} {getStatusLabel("OPEN")}
+                </Badge>
+              )}
+              {proposalCounts.CLOSED > 0 && (
+                <Badge
+                  variant={getStatusVariant("CLOSED") as "status-closed"}
+                  className="text-[10px] uppercase tracking-[0.16em]"
+                >
+                  {proposalCounts.CLOSED} {getStatusLabel("CLOSED")}
+                </Badge>
+              )}
+              {proposalCounts.ARCHIVED > 0 && (
+                <Badge
+                  variant={getStatusVariant("ARCHIVED") as "status-archived"}
+                  className="text-[10px] uppercase tracking-[0.16em]"
+                >
+                  {proposalCounts.ARCHIVED} {getStatusLabel("ARCHIVED")}
+                </Badge>
+              )}
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="hidden h-4 w-px bg-slate-700 sm:block" />
+
+          {/* Tasks summary */}
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-slate-300">
+              Tasks ({tasks.length}):
+            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              {taskCounts.TODO > 0 && (
+                <Badge
+                  variant={getStatusVariant("TODO") as "status-todo"}
+                  className="text-[10px] uppercase tracking-[0.16em]"
+                >
+                  {taskCounts.TODO} {getStatusLabel("TODO")}
+                </Badge>
+              )}
+              {taskCounts.IN_PROGRESS > 0 && (
+                <Badge
+                  variant={getStatusVariant("IN_PROGRESS") as "status-progress"}
+                  className="text-[10px] uppercase tracking-[0.16em]"
+                >
+                  {taskCounts.IN_PROGRESS} {getStatusLabel("IN_PROGRESS")}
+                </Badge>
+              )}
+              {taskCounts.DONE > 0 && (
+                <Badge
+                  variant={getStatusVariant("DONE") as "status-done"}
+                  className="text-[10px] uppercase tracking-[0.16em]"
+                >
+                  {taskCounts.DONE} {getStatusLabel("DONE")}
+                </Badge>
+              )}
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

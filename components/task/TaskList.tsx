@@ -9,9 +9,15 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ListTodo, MousePointerClick } from "lucide-react";
-import { getStatusVariant, getStatusLabel } from "@/lib/status";
+import { ListTodo, MousePointerClick, ArrowRight } from "lucide-react";
+import {
+  getStatusVariant,
+  getStatusLabel,
+  getNextTaskStatus,
+  getStatusActionLabel,
+} from "@/lib/status";
 import { truncateId, formatDate } from "@/lib/format";
 
 export interface TaskListProps {
@@ -27,6 +33,7 @@ export function TaskList({
   loading,
   error,
   selectedProposalKey,
+  onStatusChange,
 }: TaskListProps) {
   return (
     <Card className="border-white/10 bg-black/40">
@@ -81,49 +88,66 @@ export function TaskList({
         <div className="space-y-2">
           {tasks.map((task, index) => {
             const status = task.status ?? "TODO";
+            const nextStatus = getNextTaskStatus(status);
+            const actionLabel = getStatusActionLabel(status);
 
             return (
-              <div
-                key={`${task.id}-${index}`}
-                className="rounded-md border border-slate-800/80 bg-black/60 p-3 text-xs sm:text-sm"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-slate-100 truncate">
-                        {task.title}
-                      </span>
-                      <Badge
-                        variant={
-                          getStatusVariant(status) as
-                            | "status-todo"
-                            | "status-progress"
-                            | "status-done"
-                        }
-                        className="text-[10px] uppercase tracking-[0.16em]"
-                      >
-                        {getStatusLabel(status)}
-                      </Badge>
-                    </div>
-
-                    {task.description && (
-                      <p className="mt-1 text-xs text-slate-400">
-                        {task.description}
-                      </p>
-                    )}
-
-                    <div className="mt-1 flex items-center gap-3">
-                      <span className="font-mono text-xs text-emerald-300/80">
-                        {truncateId(task.id)}
-                      </span>
-                      {task.createdAt && (
-                        <span className="text-xs text-slate-500">
-                          {formatDate(task.createdAt)}
+              <div key={`${task.id}-${index}`} className="space-y-2">
+                <div className="rounded-md border border-slate-800/80 bg-black/60 p-3 text-xs sm:text-sm">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-slate-100 truncate">
+                          {task.title}
                         </span>
+                        <Badge
+                          variant={
+                            getStatusVariant(status) as
+                              | "status-todo"
+                              | "status-progress"
+                              | "status-done"
+                          }
+                          className="text-[10px] uppercase tracking-[0.16em]"
+                        >
+                          {getStatusLabel(status)}
+                        </Badge>
+                      </div>
+
+                      {task.description && (
+                        <p className="mt-1 text-xs text-slate-400">
+                          {task.description}
+                        </p>
                       )}
+
+                      <div className="mt-1 flex items-center gap-3">
+                        <span className="font-mono text-xs text-emerald-300/80">
+                          {truncateId(task.id)}
+                        </span>
+                        {task.createdAt && (
+                          <span className="text-xs text-slate-500">
+                            {formatDate(task.createdAt)}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                {/* Status action button - show if there's a next status */}
+                {nextStatus && actionLabel && onStatusChange && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onStatusChange(task.id, nextStatus);
+                    }}
+                    className="w-full text-xs"
+                  >
+                    <ArrowRight className="mr-1 size-3" />
+                    {actionLabel}
+                  </Button>
+                )}
               </div>
             );
           })}

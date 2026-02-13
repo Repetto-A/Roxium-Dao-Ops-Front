@@ -11,8 +11,13 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { FileText } from "lucide-react";
-import { getStatusVariant, getStatusLabel } from "@/lib/status";
+import { FileText, ArrowRight } from "lucide-react";
+import {
+  getStatusVariant,
+  getStatusLabel,
+  getNextProposalStatus,
+  getStatusActionLabel,
+} from "@/lib/status";
 import { truncateId, formatDate } from "@/lib/format";
 
 export interface ProposalListProps {
@@ -37,33 +42,17 @@ export function ProposalList({
   onSelectProposal,
   onReload,
   taskCountByProposal,
+  onStatusChange,
 }: ProposalListProps) {
-  async function handleReloadClick() {
-    if (!onReload) return;
-    const maybe = onReload();
-    if (maybe instanceof Promise) {
-      await maybe;
-    }
-  }
-
   return (
     <Card className="border-white/10 bg-black/40">
-      <CardHeader className="flex flex-row items-center justify-between gap-2">
-        <div>
-          <CardTitle className="text-base">
-            Proposals{!loading && ` (${proposals.length})`}
-          </CardTitle>
-          <CardDescription className="text-xs">
-            Operational proposals and decisions stored in Vetra.
-          </CardDescription>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => void handleReloadClick()}
-        >
-          Refresh
-        </Button>
+      <CardHeader>
+        <CardTitle className="text-base">
+          Proposals{!loading && ` (${proposals.length})`}
+        </CardTitle>
+        <CardDescription className="text-xs">
+          Operational proposals and decisions stored in Vetra.
+        </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-3">
@@ -102,71 +91,90 @@ export function ProposalList({
             const isSelected = proposal.id === selectedProposalKey;
             const taskCount = taskCountByProposal?.[proposal.id] ?? 0;
             const status = proposal.status ?? "DRAFT";
+            const nextStatus = getNextProposalStatus(status);
+            const actionLabel = getStatusActionLabel(status);
 
             return (
-              <button
-                key={`${proposal.id}-${index}`}
-                type="button"
-                aria-pressed={isSelected}
-                onClick={() => onSelectProposal(proposal.id)}
-                className={[
-                  "w-full rounded-md border px-3 py-2 text-left text-xs transition",
-                  isSelected
-                    ? "border-emerald-500/70 bg-emerald-500/10"
-                    : "border-slate-800 bg-black/60 hover:border-emerald-500/50 hover:bg-black",
-                ].join(" ")}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-slate-100 truncate">
-                        {proposal.title}
-                      </span>
-                      <Badge
-                        variant={
-                          getStatusVariant(status) as
-                            | "status-draft"
-                            | "status-open"
-                            | "status-closed"
-                            | "status-archived"
-                        }
-                        className="text-[10px] uppercase tracking-[0.16em]"
-                      >
-                        {getStatusLabel(status)}
-                      </Badge>
-                    </div>
-
-                    {proposal.description && (
-                      <p className="mt-1 text-xs text-slate-400 line-clamp-2">
-                        {proposal.description}
-                      </p>
-                    )}
-
-                    <div className="mt-1 flex items-center gap-3">
-                      <span className="font-mono text-xs text-emerald-300/80">
-                        {truncateId(proposal.id)}
-                      </span>
-                      {proposal.createdAt && (
-                        <span className="text-xs text-slate-500">
-                          {formatDate(proposal.createdAt)}
+              <div key={`${proposal.id}-${index}`} className="space-y-2">
+                <button
+                  type="button"
+                  aria-pressed={isSelected}
+                  onClick={() => onSelectProposal(proposal.id)}
+                  className={[
+                    "w-full rounded-md border px-3 py-2 text-left text-xs transition",
+                    isSelected
+                      ? "border-emerald-500/70 bg-emerald-500/10"
+                      : "border-slate-800 bg-black/60 hover:border-emerald-500/50 hover:bg-black",
+                  ].join(" ")}
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-slate-100 truncate">
+                          {proposal.title}
                         </span>
-                      )}
-                      <span className="text-xs text-slate-500">
-                        {taskCount} {taskCount === 1 ? "task" : "tasks"}
-                      </span>
-                    </div>
-                  </div>
+                        <Badge
+                          variant={
+                            getStatusVariant(status) as
+                              | "status-draft"
+                              | "status-open"
+                              | "status-closed"
+                              | "status-archived"
+                          }
+                          className="text-[10px] uppercase tracking-[0.16em]"
+                        >
+                          {getStatusLabel(status)}
+                        </Badge>
+                      </div>
 
-                  {proposal.budget != null && (
-                    <div className="text-right text-xs text-emerald-300">
-                      Budget
-                      <div className="text-sm font-semibold">
-                        {proposal.budget}
+                      {proposal.description && (
+                        <p className="mt-1 text-xs text-slate-400 line-clamp-2">
+                          {proposal.description}
+                        </p>
+                      )}
+
+                      <div className="mt-1 flex items-center gap-3">
+                        <span className="font-mono text-xs text-emerald-300/80">
+                          {truncateId(proposal.id)}
+                        </span>
+                        {proposal.createdAt && (
+                          <span className="text-xs text-slate-500">
+                            {formatDate(proposal.createdAt)}
+                          </span>
+                        )}
+                        <span className="text-xs text-slate-500">
+                          {taskCount} {taskCount === 1 ? "task" : "tasks"}
+                        </span>
                       </div>
                     </div>
-                  )}
-                </div>
-              </button>
+
+                    {proposal.budget != null && (
+                      <div className="text-right text-xs text-emerald-300">
+                        Budget
+                        <div className="text-sm font-semibold">
+                          {proposal.budget}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </button>
+
+                {/* Status action button - only show on selected proposal if there's a next status */}
+                {isSelected && nextStatus && actionLabel && onStatusChange && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onStatusChange(proposal.id, nextStatus);
+                    }}
+                    className="w-full text-xs"
+                  >
+                    <ArrowRight className="mr-1 size-3" />
+                    {actionLabel}
+                  </Button>
+                )}
+              </div>
             );
           })}
         </div>

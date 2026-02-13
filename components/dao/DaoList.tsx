@@ -24,32 +24,15 @@ export interface DaoListProps {
 }
 
 export function DaoList({ daos, loading, error, onReload }: DaoListProps) {
-  async function handleReloadClick() {
-    if (!onReload) return;
-    const maybePromise = onReload();
-    if (maybePromise instanceof Promise) {
-      await maybePromise;
-    }
-  }
-
   return (
     <Card className="border-white/10 bg-black/40">
-      <CardHeader className="flex flex-row items-center justify-between gap-2">
-        <div>
-          <CardTitle className="text-base">
-            DAOs{!loading && ` (${daos.length})`}
-          </CardTitle>
-          <CardDescription className="text-xs">
-            DAOs stored in Vetra document drive.
-          </CardDescription>
-        </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => void handleReloadClick()}
-        >
-          Refresh
-        </Button>
+      <CardHeader>
+        <CardTitle className="text-base">
+          DAOs{!loading && ` (${daos.length})`}
+        </CardTitle>
+        <CardDescription className="text-xs">
+          DAOs stored in Vetra document drive.
+        </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-3">
