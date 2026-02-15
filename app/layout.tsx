@@ -16,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-[#050816] text-slate-100">
+      <body className="min-h-screen bg-background text-foreground antialiased">
         <ToastProvider>{children}</ToastProvider>
       </body>
     </html>
