@@ -20,11 +20,13 @@ import { Calendar } from "lucide-react";
 export interface ProposalCreateFormProps {
   daoId: string;
   onCreated?: () => void | Promise<void>;
+  hideSectionHeader?: boolean;
 }
 
 export function ProposalCreateForm({
   daoId,
   onCreated,
+  hideSectionHeader = false,
 }: ProposalCreateFormProps) {
   const { mutate: createProposal, loading, error } = useCreateProposal();
   const { toast } = useToast();
@@ -77,10 +79,12 @@ export function ProposalCreateForm({
 
   return (
     <div>
-      <SectionHeader
-        title="Create Proposal"
-        variant="create"
-      />
+      {!hideSectionHeader && (
+        <SectionHeader
+          title="Create Proposal"
+          variant="create"
+        />
+      )}
       <Card className="border-l-2 border-l-primary">
         <CardHeader>
           <CardTitle>New proposal</CardTitle>

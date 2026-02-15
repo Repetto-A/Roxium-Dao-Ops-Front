@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import type { ReactNode } from "react";
 import type { Task, TaskStatus } from "@/lib/vetra/types";
 import {
   Card,
@@ -29,6 +30,7 @@ export interface TaskListProps {
   loading: boolean;
   error: string | null;
   selectedProposalKey?: string | null;
+  headerAction?: ReactNode;
   onStatusChange?: (taskId: string, newStatus: TaskStatus) => Promise<void>;
   onUpdate?: (
     taskId: string,
@@ -42,6 +44,7 @@ export function TaskList({
   loading,
   error,
   selectedProposalKey,
+  headerAction,
   onStatusChange,
   onUpdate,
   onDelete,
@@ -109,7 +112,9 @@ export function TaskList({
       <SectionHeader
         title="Tasks"
         description={!loading && selectedProposalKey ? `${tasks.length} ${tasks.length === 1 ? 'task' : 'tasks'} for this proposal` : undefined}
-        variant="list"
+        variant="create"
+        titleClassName="text-foreground"
+        action={headerAction}
       />
       <Card>
         <CardHeader>
