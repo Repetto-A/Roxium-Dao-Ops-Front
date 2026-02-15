@@ -203,3 +203,11 @@ export const ASSIGN_TASK = `
     Task_assignTask(docId: $docId, driveId: $driveId, input: $input)
   }
 `;
+
+// ========== DRIVE OPERATIONS ==========
+
+export const DELETE_DRIVE_NODE = `
+  mutation DeleteDriveNode($driveId: String!, $input: DocumentDrive_DeleteNodeInput!) {
+    DocumentDrive_deleteNode(driveId: $driveId, input: $input)
+  }
+`;

@@ -2,11 +2,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 import { useDaoBoard } from "@/hooks/useDaos";
+import { useUpdateDao, useDeleteDao } from "@/hooks/useDaos";
 import { useUpdateProposalStatus } from "@/hooks/useProposals";
+import { useUpdateProposal, useDeleteProposal } from "@/hooks/useProposals";
 import { useUpdateTaskStatus } from "@/hooks/useTasks";
+import { useUpdateTask, useDeleteTask } from "@/hooks/useTasks";
 import { useToast } from "@/components/ui/toast";
 
 import { DaoBoardHeader } from "@/components/dao/DaoBoardHeader";
@@ -27,10 +30,17 @@ export default function DaoBoardPage() {
   const params = useParams<{ daoKey?: string }>();
   const daoKey = params.daoKey ?? null;
 
+  const router = useRouter();
   const { dao, proposals, tasks, loading, error, refetch } =
     useDaoBoard(daoKey);
+  const { mutate: updateDaoMutate } = useUpdateDao();
+  const { mutate: deleteDaoMutate } = useDeleteDao();
   const { mutate: updateProposalStatus } = useUpdateProposalStatus();
+  const { mutate: updateProposalMutate } = useUpdateProposal();
+  const { mutate: deleteProposalMutate } = useDeleteProposal();
   const { mutate: updateTaskStatus } = useUpdateTaskStatus();
+  const { mutate: updateTaskMutate } = useUpdateTask();
+  const { mutate: deleteTaskMutate } = useDeleteTask();
   const { toast } = useToast();
 
   const [userSelectedProposalKey, setUserSelectedProposalKey] = useState<
@@ -112,6 +122,81 @@ export default function DaoBoardPage() {
     }
   }
 
+  // ---- DAO update/delete ----
+
+  async function handleUpdateDao(daoId: string, input: { name?: string; description?: string }) {
+    try {
+      await updateDaoMutate(daoId, input);
+      toast({ title: "DAO updated", description: "Changes saved successfully.", variant: "success" });
+      await refetch();
+    } catch {
+      toast({ title: "Error", description: "Failed to update DAO.", variant: "error" });
+    }
+  }
+
+  async function handleDeleteDao(daoId: string) {
+    try {
+      await deleteDaoMutate(daoId);
+      toast({ title: "DAO archived", description: "DAO has been archived.", variant: "success" });
+      router.push("/daos");
+    } catch {
+      toast({ title: "Error", description: "Failed to archive DAO.", variant: "error" });
+    }
+  }
+
+  // ---- Proposal update/delete ----
+
+  async function handleUpdateProposal(
+    proposalId: string,
+    input: { title?: string; description?: string; budget?: number | null; deadline?: string | null },
+  ) {
+    try {
+      await updateProposalMutate(proposalId, input);
+      toast({ title: "Proposal updated", description: "Changes saved successfully.", variant: "success" });
+      await refetch();
+    } catch {
+      toast({ title: "Error", description: "Failed to update proposal.", variant: "error" });
+    }
+  }
+
+  async function handleDeleteProposal(proposalId: string) {
+    try {
+      await deleteProposalMutate(proposalId);
+      toast({ title: "Proposal archived", description: "Proposal has been archived.", variant: "success" });
+      if (selectedProposalKey === proposalId) {
+        setUserSelectedProposalKey(null);
+      }
+      await refetch();
+    } catch {
+      toast({ title: "Error", description: "Failed to archive proposal.", variant: "error" });
+    }
+  }
+
+  // ---- Task update/delete ----
+
+  async function handleUpdateTask(
+    taskId: string,
+    input: { title?: string; description?: string; budget?: number | null; deadline?: string | null },
+  ) {
+    try {
+      await updateTaskMutate(taskId, input);
+      toast({ title: "Task updated", description: "Changes saved successfully.", variant: "success" });
+      await refetch();
+    } catch {
+      toast({ title: "Error", description: "Failed to update task.", variant: "error" });
+    }
+  }
+
+  async function handleDeleteTask(taskId: string) {
+    try {
+      await deleteTaskMutate(taskId);
+      toast({ title: "Task archived", description: "Task has been archived.", variant: "success" });
+      await refetch();
+    } catch {
+      toast({ title: "Error", description: "Failed to archive task.", variant: "error" });
+    }
+  }
+
   // If there's no daoKey in the URL
   if (!daoKey) {
     return (
@@ -132,7 +217,7 @@ export default function DaoBoardPage() {
   const hasDao = !!dao;
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#050816] text-slate-100">
+    <div className="flex min-h-screen flex-col bg-background">
       <SiteHeader
         breadcrumbs={[
           { label: "DAOs", href: "/daos" },
@@ -140,45 +225,36 @@ export default function DaoBoardPage() {
         ]}
       />
       <main className="flex-1 py-8">
-        <Container>
-          <div className="mb-6 space-y-2">
-            <h1 className="text-2xl font-semibold text-slate-50 sm:text-3xl">
-              {dao?.name ?? "DAO Board"}
-            </h1>
-            <p className="max-w-2xl text-sm text-slate-300">
-              Manage proposals and tasks for this DAO.
-            </p>
-          </div>
-
+        <Container wide>
           {!hasDao && loading && (
-            <p className="mb-4 text-xs text-slate-400">
+            <p className="mb-6 text-sm text-muted-foreground">
               Loading DAO information from Vetra…
             </p>
           )}
 
           {!hasDao && !loading && !error && (
-            <p className="mb-4 text-xs text-red-400">
+            <p className="mb-6 text-sm text-destructive">
               No DAO information was found in Vetra.
             </p>
           )}
 
           {error && (
-            <p className="mb-4 text-xs text-red-400">
+            <p className="mb-6 text-sm text-destructive">
               Error loading board: {error}
             </p>
           )}
 
           {hasDao && (
             <>
-              <div className="mb-6">
-                <DaoBoardHeader dao={dao} />
+              <div className="mb-8">
+                <DaoBoardHeader dao={dao} onUpdate={handleUpdateDao} onDelete={handleDeleteDao} />
               </div>
 
-              <div className="mb-6">
+              <div className="mb-8">
                 <BoardSummary proposals={proposals} tasks={tasks} />
               </div>
 
-              <div className="grid gap-6 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1.2fr)_minmax(0,1.1fr)]">
+              <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_minmax(0,1fr)]">
                 {/* Column 1: Create Proposal */}
                 <ProposalCreateForm daoId={daoKey} onCreated={handleReload} />
 
@@ -192,16 +268,20 @@ export default function DaoBoardPage() {
                   onReload={handleReload}
                   taskCountByProposal={taskCountByProposal}
                   onStatusChange={handleProposalStatusChange}
+                  onUpdate={handleUpdateProposal}
+                  onDelete={handleDeleteProposal}
                 />
 
                 {/* Column 3: Tasks for the selected proposal */}
-                <div className="space-y-4">
+                <div className="space-y-6">
                   <TaskList
                     tasks={tasksForSelectedProposal}
                     loading={loading}
                     error={error}
                     selectedProposalKey={selectedProposalKey}
                     onStatusChange={handleTaskStatusChange}
+                    onUpdate={handleUpdateTask}
+                    onDelete={handleDeleteTask}
                   />
                   <TaskCreateForm
                     daoId={daoKey}

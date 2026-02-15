@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
+import { SectionHeader } from "@/components/common/SectionHeader";
 
 export interface DaoCreateFormProps {
   onCreated?: () => void | Promise<void>;
@@ -57,18 +58,23 @@ export function DaoCreateForm({ onCreated }: DaoCreateFormProps) {
   }
 
   return (
-    <Card className="border-white/10 bg-black/40">
-      <CardHeader>
-        <CardTitle className="text-base">Create new DAO</CardTitle>
-        <CardDescription className="text-xs">
-          Define the space where proposals and operational tasks will be
-          grouped.
-        </CardDescription>
-      </CardHeader>
+    <div>
+      <SectionHeader
+        title="Create a DAO"
+        variant="create"
+      />
+      <Card className="border-l-2 border-l-primary">
+        <CardHeader>
+          <CardTitle>New DAO</CardTitle>
+          <CardDescription>
+            Define the space where proposals and operational tasks will be
+            grouped.
+          </CardDescription>
+        </CardHeader>
       <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-3">
-          <div className="space-y-1.5">
-            <label htmlFor="dao-name" className="text-xs font-medium text-slate-200">
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <label htmlFor="dao-name" className="text-sm font-semibold text-foreground">
               DAO name
             </label>
             <Input
@@ -79,9 +85,9 @@ export function DaoCreateForm({ onCreated }: DaoCreateFormProps) {
             />
           </div>
 
-          <div className="space-y-1.5">
-            <label htmlFor="dao-description" className="text-xs font-medium text-slate-200">
-              Description (optional)
+          <div className="space-y-2">
+            <label htmlFor="dao-description" className="text-sm font-semibold text-foreground">
+              Description <span className="text-muted-foreground font-normal">(optional)</span>
             </label>
             <Textarea
               id="dao-description"
@@ -93,12 +99,13 @@ export function DaoCreateForm({ onCreated }: DaoCreateFormProps) {
           </div>
 
           {error && (
-            <p className="text-xs text-red-400">Error creating DAO: {error}</p>
+            <p className="text-sm text-destructive">Error creating DAO: {error}</p>
           )}
         </CardContent>
-        <CardFooter>
+        <CardFooter className="mt-2">
           <Button
             type="submit"
+            size="lg"
             disabled={loading || !name.trim()}
             className="w-full sm:w-auto"
           >
@@ -106,6 +113,7 @@ export function DaoCreateForm({ onCreated }: DaoCreateFormProps) {
           </Button>
         </CardFooter>
       </form>
-    </Card>
+      </Card>
+    </div>
   );
 }

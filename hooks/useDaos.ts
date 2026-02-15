@@ -4,6 +4,8 @@
 import { useCallback, useEffect, useState } from "react";
 import {
   createDao,
+  updateDao,
+  deleteDao,
   getAllDaos,
   getDao,
   getDaoBoard,
@@ -12,6 +14,9 @@ import {
 import type {
   CreateDaoInput,
   CreateDaoResponse,
+  UpdateDaoInput,
+  UpdateDaoResponse,
+  DeleteDaoResponse,
   DaoBoardResponse,
   DaoDetailResponse,
   DaoListResponse,
@@ -217,4 +222,72 @@ export function useCreateDao(): UseCreateDaoResult {
     error,
     lastResult,
   };
+}
+
+// ---- actualizar DAO ----
+
+export interface UseUpdateDaoResult {
+  mutate: (daoId: string, input: UpdateDaoInput) => Promise<UpdateDaoResponse>;
+  loading: boolean;
+  error: string | null;
+}
+
+export function useUpdateDao(): UseUpdateDaoResult {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const mutate = useCallback(
+    async (daoId: string, input: UpdateDaoInput): Promise<UpdateDaoResponse> => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await updateDao(daoId, input);
+        return res;
+      } catch (err) {
+        const message = getErrorMessage(err);
+        console.error("useUpdateDao error:", err);
+        setError(message);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
+  return { mutate, loading, error };
+}
+
+// ---- eliminar DAO (cascade) ----
+
+export interface UseDeleteDaoResult {
+  mutate: (daoId: string) => Promise<DeleteDaoResponse>;
+  loading: boolean;
+  error: string | null;
+}
+
+export function useDeleteDao(): UseDeleteDaoResult {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const mutate = useCallback(
+    async (daoId: string): Promise<DeleteDaoResponse> => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await deleteDao(daoId);
+        return res;
+      } catch (err) {
+        const message = getErrorMessage(err);
+        console.error("useDeleteDao error:", err);
+        setError(message);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
+  return { mutate, loading, error };
 }

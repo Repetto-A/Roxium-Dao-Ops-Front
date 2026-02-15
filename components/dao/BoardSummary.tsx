@@ -32,22 +32,21 @@ export function BoardSummary({ proposals, tasks }: BoardSummaryProps) {
   };
 
   return (
-    <Card className="border-white/10 bg-black/40">
+    <Card>
       <CardHeader>
-        <CardTitle className="text-base">Board Overview</CardTitle>
+        <CardTitle>Board Overview</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col gap-3 text-xs sm:flex-row sm:items-center sm:gap-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-8">
           {/* Proposals summary */}
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-slate-300">
-              Proposals ({proposals.length}):
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-foreground">
+              Proposals ({proposals.length})
             </span>
             <div className="flex flex-wrap items-center gap-2">
               {proposalCounts.DRAFT > 0 && (
                 <Badge
                   variant={getStatusVariant("DRAFT") as "status-draft"}
-                  className="text-[10px] uppercase tracking-[0.16em]"
                 >
                   {proposalCounts.DRAFT} {getStatusLabel("DRAFT")}
                 </Badge>
@@ -55,7 +54,6 @@ export function BoardSummary({ proposals, tasks }: BoardSummaryProps) {
               {proposalCounts.OPEN > 0 && (
                 <Badge
                   variant={getStatusVariant("OPEN") as "status-open"}
-                  className="text-[10px] uppercase tracking-[0.16em]"
                 >
                   {proposalCounts.OPEN} {getStatusLabel("OPEN")}
                 </Badge>
@@ -63,7 +61,6 @@ export function BoardSummary({ proposals, tasks }: BoardSummaryProps) {
               {proposalCounts.CLOSED > 0 && (
                 <Badge
                   variant={getStatusVariant("CLOSED") as "status-closed"}
-                  className="text-[10px] uppercase tracking-[0.16em]"
                 >
                   {proposalCounts.CLOSED} {getStatusLabel("CLOSED")}
                 </Badge>
@@ -71,7 +68,6 @@ export function BoardSummary({ proposals, tasks }: BoardSummaryProps) {
               {proposalCounts.ARCHIVED > 0 && (
                 <Badge
                   variant={getStatusVariant("ARCHIVED") as "status-archived"}
-                  className="text-[10px] uppercase tracking-[0.16em]"
                 >
                   {proposalCounts.ARCHIVED} {getStatusLabel("ARCHIVED")}
                 </Badge>
@@ -80,18 +76,17 @@ export function BoardSummary({ proposals, tasks }: BoardSummaryProps) {
           </div>
 
           {/* Divider */}
-          <div className="hidden h-4 w-px bg-slate-700 sm:block" />
+          <div className="hidden h-5 w-px bg-border sm:block" />
 
           {/* Tasks summary */}
-          <div className="flex items-center gap-2">
-            <span className="font-medium text-slate-300">
-              Tasks ({tasks.length}):
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-semibold text-foreground">
+              Tasks ({tasks.length})
             </span>
             <div className="flex flex-wrap items-center gap-2">
               {taskCounts.TODO > 0 && (
                 <Badge
                   variant={getStatusVariant("TODO") as "status-todo"}
-                  className="text-[10px] uppercase tracking-[0.16em]"
                 >
                   {taskCounts.TODO} {getStatusLabel("TODO")}
                 </Badge>
@@ -99,7 +94,6 @@ export function BoardSummary({ proposals, tasks }: BoardSummaryProps) {
               {taskCounts.IN_PROGRESS > 0 && (
                 <Badge
                   variant={getStatusVariant("IN_PROGRESS") as "status-progress"}
-                  className="text-[10px] uppercase tracking-[0.16em]"
                 >
                   {taskCounts.IN_PROGRESS} {getStatusLabel("IN_PROGRESS")}
                 </Badge>
@@ -107,7 +101,6 @@ export function BoardSummary({ proposals, tasks }: BoardSummaryProps) {
               {taskCounts.DONE > 0 && (
                 <Badge
                   variant={getStatusVariant("DONE") as "status-done"}
-                  className="text-[10px] uppercase tracking-[0.16em]"
                 >
                   {taskCounts.DONE} {getStatusLabel("DONE")}
                 </Badge>

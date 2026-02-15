@@ -88,4 +88,20 @@ async function patch<T>(path: string, body: unknown): Promise<T> {
   return data;
 }
 
-export const apiClient = { get, post, patch };
+async function del<T>(path: string): Promise<T> {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  if (!res.ok) {
+    const errorBody = await parseErrorResponse(res);
+    console.error("DELETE error", path, errorBody);
+    throw new Error(errorBody?.error ?? `DELETE ${path} failed`);
+  }
+
+  const data = (await res.json()) as T;
+  return data;
+}
+
+export const apiClient = { get, post, patch, del };
