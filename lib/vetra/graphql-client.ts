@@ -2,7 +2,7 @@
 // Server-side only GraphQL client for Vetra reactor API
 
 const VETRA_BASE_URL =
-  process.env.VETRA_GRAPHQL_URL ?? "http://localhost:4001";
+  process.env.BACKEND_URL ?? "http://localhost:4001";
 
 interface GraphQLResponse<T> {
   data?: T;
