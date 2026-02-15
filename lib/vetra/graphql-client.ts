@@ -2,7 +2,7 @@
 // Server-side only GraphQL client for Vetra reactor API
 
 const VETRA_BASE_URL =
-  process.env.VETRA_GRAPHQL_URL ?? "http://localhost:4001";
+  process.env.BACKEND_URL ?? "http://localhost:4001";
 
 interface GraphQLResponse<T> {
   data?: T;
@@ -15,6 +15,13 @@ export async function gql<T>(
   endpoint = "/d/graphql", // Default to supergraph, or use /graphql/dao, /graphql/proposal, /graphql/task
 ): Promise<T> {
   const url = `${VETRA_BASE_URL}${endpoint}`;
+
+  console.log("[GraphQL] Request:", {
+    BACKEND_URL: process.env.BACKEND_URL,
+    VETRA_BASE_URL,
+    endpoint,
+    fullUrl: url,
+  });
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

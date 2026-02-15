@@ -42,5 +42,40 @@ export async function assignTask(
   return apiClient.patch(`/api/vetra/tasks/${taskId}/assignee`, { assignee });
 }
 
+// ---- Update Task ----
+
+export interface UpdateTaskInput {
+  title?: string;
+  description?: string;
+  budget?: number | null;
+  deadline?: string | null;
+}
+
+export interface UpdateTaskResponse {
+  taskId: string;
+}
+
+// PATCH /api/vetra/tasks/[taskId] → Update task details
+export async function updateTask(
+  taskId: string,
+  input: UpdateTaskInput
+): Promise<UpdateTaskResponse> {
+  return apiClient.patch<UpdateTaskResponse>(
+    `/api/vetra/tasks/${taskId}`,
+    input
+  );
+}
+
+// ---- Delete Task ----
+
+export interface DeleteTaskResponse {
+  deleted: boolean;
+}
+
+// DELETE /api/vetra/tasks/[taskId] → Delete task
+export async function deleteTask(taskId: string): Promise<DeleteTaskResponse> {
+  return apiClient.del<DeleteTaskResponse>(`/api/vetra/tasks/${taskId}`);
+}
+
 // ---- Re-exports for backward compatibility ----
 export type { Task, TaskStatus } from "@/lib/vetra/types";

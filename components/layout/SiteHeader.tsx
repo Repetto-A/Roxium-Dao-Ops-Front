@@ -14,50 +14,50 @@ export interface SiteHeaderProps {
 
 export function SiteHeader({ breadcrumbs }: SiteHeaderProps) {
   return (
-    <header className="border-b border-white/10 bg-black/30 backdrop-blur">
+    <header className="border-b border-border/50 bg-background/80 backdrop-blur-xl sticky top-0 z-50">
       <Container>
         <div className="flex items-center justify-between py-4">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="rounded-full border border-emerald-400/60 px-2 py-1 text-xs uppercase tracking-[0.2em] text-emerald-300/90">
+          <Link href="/" className="flex items-center gap-3 group">
+            <span className="rounded-full border border-primary/60 px-3 py-1.5 text-xs font-semibold uppercase tracking-wider text-primary transition-all group-hover:border-primary group-hover:bg-primary/10">
               RoxiumLabs
             </span>
-            <span className="text-sm font-mono text-slate-300">
+            <span className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
               DAO Ops on Vetra
             </span>
           </Link>
 
           {breadcrumbs && breadcrumbs.length > 0 ? (
-            <nav className="flex items-center gap-2 text-xs sm:text-sm">
+            <nav className="flex items-center gap-2 text-sm">
               {breadcrumbs.map((crumb, index) => (
                 <div key={index} className="flex items-center gap-2">
                   {index > 0 && (
-                    <ChevronRight className="size-3 text-slate-600" />
+                    <ChevronRight className="size-4 text-muted-foreground/50" />
                   )}
                   {crumb.href ? (
                     <Link
                       href={crumb.href}
-                      className="text-slate-300 hover:text-white"
+                      className="text-muted-foreground hover:text-foreground transition-colors font-medium"
                     >
                       {crumb.label}
                     </Link>
                   ) : (
-                    <span className="text-slate-400">{crumb.label}</span>
+                    <span className="text-foreground font-semibold">{crumb.label}</span>
                   )}
                 </div>
               ))}
             </nav>
           ) : (
-            <nav className="flex items-center gap-4 text-xs sm:text-sm">
-              <a href="#features" className="text-slate-300 hover:text-white">
+            <nav className="flex items-center gap-6 text-sm">
+              <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors font-medium">
                 Features
               </a>
               <a
                 href="#how-it-works"
-                className="text-slate-300 hover:text-white"
+                className="text-muted-foreground hover:text-foreground transition-colors font-medium"
               >
                 How it works
               </a>
-              <a href="#dev" className="text-emerald-300 hover:text-emerald-200">
+              <a href="#dev" className="text-primary hover:text-primary/80 transition-colors font-medium">
                 For devs
               </a>
             </nav>

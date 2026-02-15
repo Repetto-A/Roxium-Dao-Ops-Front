@@ -36,5 +36,44 @@ export async function updateProposalStatus(
   });
 }
 
+// ---- Update Proposal ----
+
+export interface UpdateProposalInput {
+  title?: string;
+  description?: string;
+  budget?: number | null;
+  deadline?: string | null;
+}
+
+export interface UpdateProposalResponse {
+  proposalId: string;
+}
+
+// PATCH /api/vetra/proposals/[proposalId] → Update proposal details
+export async function updateProposal(
+  proposalId: string,
+  input: UpdateProposalInput
+): Promise<UpdateProposalResponse> {
+  return apiClient.patch<UpdateProposalResponse>(
+    `/api/vetra/proposals/${proposalId}`,
+    input
+  );
+}
+
+// ---- Delete Proposal ----
+
+export interface DeleteProposalResponse {
+  deleted: boolean;
+}
+
+// DELETE /api/vetra/proposals/[proposalId] → Delete proposal
+export async function deleteProposal(
+  proposalId: string
+): Promise<DeleteProposalResponse> {
+  return apiClient.del<DeleteProposalResponse>(
+    `/api/vetra/proposals/${proposalId}`
+  );
+}
+
 // ---- Re-exports for backward compatibility ----
 export type { Proposal, ProposalStatus } from "@/lib/vetra/types";

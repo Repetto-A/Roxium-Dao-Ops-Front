@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useRef } from "react";
 import { useCreateProposal } from "@/hooks/useProposals";
 import {
   Card,
@@ -14,6 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
+import { SectionHeader } from "@/components/common/SectionHeader";
+import { Calendar } from "lucide-react";
 
 export interface ProposalCreateFormProps {
   daoId: string;
@@ -31,6 +33,7 @@ export function ProposalCreateForm({
   const [description, setDescription] = useState<string>("");
   const [budget, setBudget] = useState<string>("");
   const [deadline, setDeadline] = useState<string>("");
+  const deadlineInputRef = useRef<HTMLInputElement>(null);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -73,20 +76,25 @@ export function ProposalCreateForm({
   }
 
   return (
-    <Card className="border-white/10 bg-black/40">
-      <CardHeader>
-        <CardTitle className="text-base">New proposal</CardTitle>
-        <CardDescription className="text-xs">
-          Create a work, budget, or decision proposal that the team will execute
-          and track with tasks.
-        </CardDescription>
-      </CardHeader>
+    <div>
+      <SectionHeader
+        title="Create Proposal"
+        variant="create"
+      />
+      <Card className="border-l-2 border-l-primary">
+        <CardHeader>
+          <CardTitle>New proposal</CardTitle>
+          <CardDescription>
+            Create a work, budget, or decision proposal that the team will execute
+            and track with tasks.
+          </CardDescription>
+        </CardHeader>
       <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-3">
-          <div className="space-y-1.5">
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
             <label
               htmlFor="proposal-title"
-              className="text-xs font-medium text-slate-200"
+              className="text-sm font-semibold text-foreground"
             >
               Title
             </label>
@@ -98,10 +106,10 @@ export function ProposalCreateForm({
             />
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <label
               htmlFor="proposal-description"
-              className="text-xs font-medium text-slate-200"
+              className="text-sm font-semibold text-foreground"
             >
               Description
             </label>
@@ -114,13 +122,13 @@ export function ProposalCreateForm({
             />
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
+          <div className="space-y-4">
+            <div className="space-y-2">
               <label
                 htmlFor="proposal-budget"
-                className="text-xs font-medium text-slate-200"
+                className="text-sm font-semibold text-foreground"
               >
-                Budget (optional)
+                Budget <span className="text-muted-foreground font-normal">(optional)</span>
               </label>
               <Input
                 id="proposal-budget"
@@ -133,31 +141,45 @@ export function ProposalCreateForm({
               />
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <label
                 htmlFor="proposal-deadline"
-                className="text-xs font-medium text-slate-200"
+                className="text-sm font-semibold text-foreground"
               >
-                Deadline (optional)
+                Deadline <span className="text-muted-foreground font-normal">(optional)</span>
               </label>
-              <Input
-                id="proposal-deadline"
-                type="datetime-local"
-                value={deadline}
-                onChange={(e) => setDeadline(e.target.value)}
-              />
+              <div className="relative">
+                <Input
+                  ref={deadlineInputRef}
+                  id="proposal-deadline"
+                  type="datetime-local"
+                  className="min-w-[180px] pr-10"
+                  aria-label="Deadline date and time"
+                  value={deadline}
+                  onChange={(e) => setDeadline(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => deadlineInputRef.current?.showPicker?.()}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/60 hover:text-foreground transition-colors"
+                  aria-label="Open calendar picker"
+                >
+                  <Calendar className="size-4" />
+                </button>
+              </div>
             </div>
           </div>
 
           {error && (
-            <p className="text-xs text-red-400">
+            <p className="text-sm text-destructive">
               Error while creating the proposal: {error}
             </p>
           )}
         </CardContent>
-        <CardFooter>
+        <CardFooter className="mt-2">
           <Button
             type="submit"
+            size="lg"
             disabled={loading || !title.trim()}
             className="w-full sm:w-auto"
           >
@@ -165,6 +187,7 @@ export function ProposalCreateForm({
           </Button>
         </CardFooter>
       </form>
-    </Card>
+      </Card>
+    </div>
   );
 }

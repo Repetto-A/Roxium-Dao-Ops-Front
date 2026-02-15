@@ -53,6 +53,38 @@ export async function createDao(
   return apiClient.post<CreateDaoResponse>("/api/vetra/daos", input);
 }
 
+// ---- Update DAO ----
+
+export interface UpdateDaoInput {
+  name?: string;
+  description?: string;
+}
+
+export interface UpdateDaoResponse {
+  daoId: string;
+}
+
+// PATCH /api/vetra/daos/:daoId → Update DAO details
+export async function updateDao(
+  daoId: string,
+  input: UpdateDaoInput
+): Promise<UpdateDaoResponse> {
+  return apiClient.patch<UpdateDaoResponse>(`/api/vetra/daos/${daoId}`, input);
+}
+
+// ---- Delete DAO ----
+
+export interface DeleteDaoResponse {
+  deleted: boolean;
+  deletedProposals: number;
+  deletedTasks: number;
+}
+
+// DELETE /api/vetra/daos/:daoId → Cascade delete DAO + proposals + tasks
+export async function deleteDao(daoId: string): Promise<DeleteDaoResponse> {
+  return apiClient.del<DeleteDaoResponse>(`/api/vetra/daos/${daoId}`);
+}
+
 // ---- Re-exports for backward compatibility ----
 // Export types from @/lib/vetra/types for components that still import from here
 export type { Dao, DaoMember, Proposal, Task } from "@/lib/vetra/types";

@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useRef } from "react";
 import { useCreateTask } from "@/hooks/useTasks";
 import {
   Card,
@@ -14,6 +14,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
+import { SectionHeader } from "@/components/common/SectionHeader";
+import { Calendar } from "lucide-react";
 
 export interface TaskCreateFormProps {
   daoId: string;
@@ -33,6 +35,7 @@ export function TaskCreateForm({
   const [description, setDescription] = useState<string>("");
   const [budget, setBudget] = useState<string>("");
   const [deadline, setDeadline] = useState<string>("");
+  const deadlineInputRef = useRef<HTMLInputElement>(null);
 
   const isDisabled = !proposalId || !title.trim();
 
@@ -80,25 +83,30 @@ export function TaskCreateForm({
   }
 
   return (
-    <Card className="border-white/10 bg-black/40">
-      <CardHeader>
-        <CardTitle className="text-base">New Task</CardTitle>
-        <CardDescription className="text-xs">
-          Tasks linked to the selected proposal.
-        </CardDescription>
-      </CardHeader>
+    <div>
+      <SectionHeader
+        title="Create Task"
+        variant="create"
+      />
+      <Card className="border-l-2 border-l-primary">
+        <CardHeader>
+          <CardTitle>New Task</CardTitle>
+          <CardDescription>
+            Tasks linked to the selected proposal.
+          </CardDescription>
+        </CardHeader>
       <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-4">
           {!proposalId && (
-            <p className="text-xs text-amber-300">
+            <p className="text-sm text-amber-500 bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
               Select a proposal in the middle column to create tasks.
             </p>
           )}
 
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <label
               htmlFor="task-title"
-              className="text-xs font-medium text-slate-200"
+              className="text-sm font-semibold text-foreground"
             >
               Title
             </label>
@@ -111,10 +119,10 @@ export function TaskCreateForm({
             />
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <label
               htmlFor="task-description"
-              className="text-xs font-medium text-slate-200"
+              className="text-sm font-semibold text-foreground"
             >
               Description
             </label>
@@ -128,13 +136,13 @@ export function TaskCreateForm({
             />
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
+          <div className="space-y-4">
+            <div className="space-y-2">
               <label
                 htmlFor="task-budget"
-                className="text-xs font-medium text-slate-200"
+                className="text-sm font-semibold text-foreground"
               >
-                Budget (optional)
+                Budget <span className="text-muted-foreground font-normal">(optional)</span>
               </label>
               <Input
                 id="task-budget"
@@ -148,30 +156,45 @@ export function TaskCreateForm({
               />
             </div>
 
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <label
                 htmlFor="task-deadline"
-                className="text-xs font-medium text-slate-200"
+                className="text-sm font-semibold text-foreground"
               >
-                Deadline (optional)
+                Deadline <span className="text-muted-foreground font-normal">(optional)</span>
               </label>
-              <Input
-                id="task-deadline"
-                disabled={!proposalId}
-                type="datetime-local"
-                value={deadline}
-                onChange={(e) => setDeadline(e.target.value)}
-              />
+              <div className="relative">
+                <Input
+                  ref={deadlineInputRef}
+                  id="task-deadline"
+                  disabled={!proposalId}
+                  type="datetime-local"
+                  className="min-w-[180px] pr-10"
+                  aria-label="Deadline date and time"
+                  value={deadline}
+                  onChange={(e) => setDeadline(e.target.value)}
+                />
+                <button
+                  type="button"
+                  disabled={!proposalId}
+                  onClick={() => deadlineInputRef.current?.showPicker?.()}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground/60 hover:text-foreground transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  aria-label="Open calendar picker"
+                >
+                  <Calendar className="size-4" />
+                </button>
+              </div>
             </div>
           </div>
 
           {error && (
-            <p className="text-xs text-red-400">Error creating task: {error}</p>
+            <p className="text-sm text-destructive">Error creating task: {error}</p>
           )}
         </CardContent>
-        <CardFooter>
+        <CardFooter className="mt-2">
           <Button
             type="submit"
+            size="lg"
             disabled={loading || isDisabled}
             className="w-full sm:w-auto"
           >
@@ -179,6 +202,7 @@ export function TaskCreateForm({
           </Button>
         </CardFooter>
       </form>
-    </Card>
+      </Card>
+    </div>
   );
 }
