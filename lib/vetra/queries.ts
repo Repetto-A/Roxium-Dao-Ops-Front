@@ -211,3 +211,11 @@ export const DELETE_DRIVE_NODE = `
     DocumentDrive_deleteNode(driveId: $driveId, input: $input)
   }
 `;
+
+// ========== SYSTEM OPERATIONS ==========
+
+export const DELETE_DOCUMENT = `
+  mutation DeleteDocument($id: PHID!) {
+    deleteDocument(id: $id)
+  }
+`;

@@ -148,10 +148,10 @@ export default function DaoBoardPage() {
   async function handleDeleteDao(daoId: string) {
     try {
       await deleteDaoMutate(daoId);
-      toast({ title: "DAO archived", description: "DAO has been archived.", variant: "success" });
+      toast({ title: "DAO deleted", description: "DAO has been permanently deleted.", variant: "success" });
       router.push("/daos");
     } catch {
-      toast({ title: "Error", description: "Failed to archive DAO.", variant: "error" });
+      toast({ title: "Error", description: "Failed to delete DAO.", variant: "error" });
     }
   }
 
@@ -173,13 +173,13 @@ export default function DaoBoardPage() {
   async function handleDeleteProposal(proposalId: string) {
     try {
       await deleteProposalMutate(proposalId);
-      toast({ title: "Proposal archived", description: "Proposal has been archived.", variant: "success" });
+      toast({ title: "Proposal deleted", description: "Proposal has been permanently deleted.", variant: "success" });
       if (selectedProposalKey === proposalId) {
         setUserSelectedProposalKey(null);
       }
       await refetch();
     } catch {
-      toast({ title: "Error", description: "Failed to archive proposal.", variant: "error" });
+      toast({ title: "Error", description: "Failed to delete proposal.", variant: "error" });
     }
   }
 
@@ -201,10 +201,10 @@ export default function DaoBoardPage() {
   async function handleDeleteTask(taskId: string) {
     try {
       await deleteTaskMutate(taskId);
-      toast({ title: "Task archived", description: "Task has been archived.", variant: "success" });
+      toast({ title: "Task deleted", description: "Task has been permanently deleted.", variant: "success" });
       await refetch();
     } catch {
-      toast({ title: "Error", description: "Failed to archive task.", variant: "error" });
+      toast({ title: "Error", description: "Failed to delete task.", variant: "error" });
     }
   }
 
