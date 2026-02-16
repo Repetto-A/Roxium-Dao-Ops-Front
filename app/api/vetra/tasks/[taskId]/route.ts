@@ -4,7 +4,7 @@
 import { NextResponse } from "next/server";
 import { gql } from "@/lib/vetra/graphql-client";
 import { mapTask, type VetraDocument, type TaskState } from "@/lib/vetra/mappers";
-import { GET_TASK, SET_TASK_DETAILS, UPDATE_TASK_STATUS } from "@/lib/vetra/queries";
+import { GET_TASK, SET_TASK_DETAILS, DELETE_DOCUMENT } from "@/lib/vetra/queries";
 
 const DRIVE_ID = process.env.VETRA_DRIVE_ID ?? "preview-81d3e4ae";
 
@@ -18,8 +18,8 @@ interface SetTaskDetailsResponse {
   Task_setTaskDetails: number;
 }
 
-interface UpdateTaskStatusResponse {
-  Task_updateTaskStatus: number;
+interface DeleteDocumentResponse {
+  deleteDocument: unknown;
 }
 
 // PATCH /api/vetra/tasks/[taskId] - Update task details
@@ -69,7 +69,7 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/vetra/tasks/[taskId] - Delete task (soft-delete via ARCHIVED status)
+// DELETE /api/vetra/tasks/[taskId] - Hard delete task
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ taskId: string }> }
@@ -77,17 +77,10 @@ export async function DELETE(
   try {
     const { taskId } = await params;
 
-    // Set task status to ARCHIVED (soft delete)
-    await gql<UpdateTaskStatusResponse>(
-      UPDATE_TASK_STATUS,
-      {
-        docId: taskId,
-        driveId: DRIVE_ID,
-        input: {
-          status: "ARCHIVED"
-        }
-      },
-      "/graphql/task"
+    await gql<DeleteDocumentResponse>(
+      DELETE_DOCUMENT,
+      { id: taskId },
+      "/graphql/system"
     );
 
     return NextResponse.json({ deleted: true });

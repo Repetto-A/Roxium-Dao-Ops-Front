@@ -4,10 +4,9 @@
 import { NextResponse } from "next/server";
 import { gql } from "@/lib/vetra/graphql-client";
 import { mapDao, mapProposal, mapTask, type VetraDocument, type DaoState, type ProposalState, type TaskState } from "@/lib/vetra/mappers";
-import { GET_DAO, SET_DAO_NAME, SET_DAO_DESCRIPTION, GET_PROPOSALS, GET_TASKS, UPDATE_PROPOSAL_STATUS, UPDATE_TASK_STATUS } from "@/lib/vetra/queries";
+import { GET_DAO, SET_DAO_NAME, SET_DAO_DESCRIPTION, GET_PROPOSALS, GET_TASKS, DELETE_DOCUMENT } from "@/lib/vetra/queries";
 
 const DRIVE_ID = process.env.VETRA_DRIVE_ID ?? "preview-81d3e4ae";
-const ARCHIVED_PREFIX = "[ARCHIVED] ";
 
 interface GetDaoResponse {
   Dao: {
@@ -35,12 +34,8 @@ interface GetTasksResponse {
   };
 }
 
-interface UpdateProposalStatusResponse {
-  Proposal_updateProposalStatus: number;
-}
-
-interface UpdateTaskStatusResponse {
-  Task_updateTaskStatus: number;
+interface DeleteDocumentResponse {
+  deleteDocument: unknown;
 }
 
 // GET /api/vetra/daos/[daoId] - Get DAO details
@@ -102,7 +97,7 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/vetra/daos/[daoId] - Cascade archive DAO + all proposals + tasks
+// DELETE /api/vetra/daos/[daoId] - Hard delete DAO + cascade delete all proposals + tasks
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ daoId: string }> }
@@ -110,14 +105,12 @@ export async function DELETE(
   try {
     const { daoId } = await params;
 
-    // Fetch DAO details and all proposals and tasks for this DAO
-    const [daoData, proposalsData, tasksData] = await Promise.all([
-      gql<GetDaoResponse>(GET_DAO, { docId: daoId }, "/graphql/dao"),
+    // Fetch all proposals and tasks belonging to this DAO
+    const [proposalsData, tasksData] = await Promise.all([
       gql<GetProposalsResponse>(GET_PROPOSALS, { driveId: DRIVE_ID }, "/graphql/proposal"),
       gql<GetTasksResponse>(GET_TASKS, { driveId: DRIVE_ID }, "/graphql/task"),
     ]);
 
-    const dao = mapDao(daoData.Dao.getDocument);
     const proposals = proposalsData.Proposal.getDocuments
       .map(mapProposal)
       .filter(p => p.daoId === daoId);
@@ -125,60 +118,40 @@ export async function DELETE(
       .map(mapTask)
       .filter(t => t.daoId === daoId);
 
-    // Archive all tasks first (soft-delete)
+    // Hard delete all tasks first (children)
     for (const task of tasks) {
-      await gql<UpdateTaskStatusResponse>(
-        UPDATE_TASK_STATUS,
-        {
-          docId: task.id,
-          driveId: DRIVE_ID,
-          input: {
-            status: "ARCHIVED"
-          }
-        },
-        "/graphql/task"
+      await gql<DeleteDocumentResponse>(
+        DELETE_DOCUMENT,
+        { id: task.id },
+        "/graphql/system"
       );
     }
 
-    // Archive all proposals (soft-delete)
+    // Hard delete all proposals
     for (const proposal of proposals) {
-      await gql<UpdateProposalStatusResponse>(
-        UPDATE_PROPOSAL_STATUS,
-        {
-          docId: proposal.id,
-          driveId: DRIVE_ID,
-          input: {
-            status: "ARCHIVED"
-          }
-        },
-        "/graphql/proposal"
+      await gql<DeleteDocumentResponse>(
+        DELETE_DOCUMENT,
+        { id: proposal.id },
+        "/graphql/system"
       );
     }
 
-    // Archive the DAO itself (soft-delete by prefixing name)
-    const archivedName = dao.name.startsWith(ARCHIVED_PREFIX)
-      ? dao.name
-      : `${ARCHIVED_PREFIX}${dao.name}`;
-
-    await gql<SetDaoNameResponse>(
-      SET_DAO_NAME,
-      {
-        docId: daoId,
-        driveId: DRIVE_ID,
-        input: { name: archivedName }
-      },
-      "/graphql/dao"
+    // Hard delete the DAO itself
+    await gql<DeleteDocumentResponse>(
+      DELETE_DOCUMENT,
+      { id: daoId },
+      "/graphql/system"
     );
 
     return NextResponse.json({
       deleted: true,
-      archivedTasks: tasks.length,
-      archivedProposals: proposals.length,
+      deletedTasks: tasks.length,
+      deletedProposals: proposals.length,
     });
   } catch (error) {
     const resolvedParams = await params;
     console.error(`[API /vetra/daos/${resolvedParams.daoId} DELETE]`, error);
-    const message = error instanceof Error ? error.message : "Failed to archive DAO";
+    const message = error instanceof Error ? error.message : "Failed to delete DAO";
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }
