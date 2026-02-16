@@ -20,14 +20,14 @@ export function SectionHeader({
 }: SectionHeaderProps) {
   return (
     <div className={cn("mb-4", className)}>
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           {variant === "create" && (
             <div className="h-6 w-1 rounded-full bg-primary" />
           )}
           <h2
             className={cn(
-              "text-xl font-bold text-foreground",
+              "text-2xl font-bold text-foreground",
               variant === "create" && "text-primary",
               titleClassName,
             )}

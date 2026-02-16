@@ -76,11 +76,11 @@ export function DaoList({ daos, loading, error }: DaoListProps) {
       />
       <Card>
         <CardHeader className="pb-2">
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center justify-between gap-4 px-4">
             <CardTitle className="text-lg font-semibold">All DAOs</CardTitle>
-            <div className="hidden items-center gap-12 text-sm font-semibold text-muted-foreground sm:flex">
-              <span>Active</span>
-              <span>Proposals</span>
+            <div className="hidden items-center gap-8 text-sm font-semibold text-muted-foreground sm:flex">
+              <span className="w-16 text-center">Active</span>
+              <span className="w-20 text-center">Proposals</span>
             </div>
           </div>
         </CardHeader>
@@ -150,11 +150,11 @@ export function DaoList({ daos, loading, error }: DaoListProps) {
                       </div>
                     </div>
 
-                    <div className="hidden items-center gap-16 text-right sm:flex">
-                      <span className="w-8 text-xl font-bold text-emerald-500">
+                    <div className="hidden items-center gap-8 sm:flex">
+                      <span className="w-16 text-center text-2xl font-bold text-emerald-500">
                         {metrics.active}
                       </span>
-                      <span className="w-14 text-2xl font-bold text-foreground">
+                      <span className="w-20 text-center text-2xl font-bold text-foreground">
                         {metrics.proposals}
                       </span>
                     </div>

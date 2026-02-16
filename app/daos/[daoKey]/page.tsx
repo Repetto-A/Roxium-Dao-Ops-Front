@@ -20,6 +20,7 @@ import { TaskCreateForm } from "@/components/task/TaskCreateForm";
 import { TaskList } from "@/components/task/TaskList";
 
 import { Container } from "@/components/common/Container";
+import { SectionHeader } from "@/components/common/SectionHeader";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Button } from "@/components/ui/button";
@@ -267,18 +268,17 @@ export default function DaoBoardPage() {
               </div>
 
               <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_minmax(0,1fr)]">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="h-6 w-1 rounded-full bg-primary" />
-                      <h2 className="text-2xl font-bold text-primary">Create Proposal</h2>
-                    </div>
+                <SectionHeader
+                  title="Create Proposal"
+                  variant="create"
+                  titleClassName="text-foreground"
+                  action={
                     <Button onClick={() => setProposalDialogOpen(true)}>
                       <Plus className="size-4" />
                       Create Proposals
                     </Button>
-                  </div>
-                </div>
+                  }
+                />
 
                 {/* Column 2: Proposal list */}
                 <ProposalList
@@ -295,25 +295,23 @@ export default function DaoBoardPage() {
                 />
 
                 {/* Column 3: Tasks for the selected proposal */}
-                <div className="space-y-6">
-                  <TaskList
-                    tasks={tasksForSelectedProposal}
-                    loading={loading}
-                    error={error}
-                    selectedProposalKey={selectedProposalKey}
-                    headerAction={
-                      canCreateTask ? (
-                        <Button onClick={() => setTaskDialogOpen(true)}>
-                          <Plus className="size-4" />
-                          Create Task
-                        </Button>
-                      ) : undefined
-                    }
-                    onStatusChange={handleTaskStatusChange}
-                    onUpdate={handleUpdateTask}
-                    onDelete={handleDeleteTask}
-                  />
-                </div>
+                <TaskList
+                  tasks={tasksForSelectedProposal}
+                  loading={loading}
+                  error={error}
+                  selectedProposalKey={selectedProposalKey}
+                  headerAction={
+                    canCreateTask ? (
+                      <Button onClick={() => setTaskDialogOpen(true)}>
+                        <Plus className="size-4" />
+                        Create Task
+                      </Button>
+                    ) : undefined
+                  }
+                  onStatusChange={handleTaskStatusChange}
+                  onUpdate={handleUpdateTask}
+                  onDelete={handleDeleteTask}
+                />
               </div>
 
               <Dialog open={proposalDialogOpen} onOpenChange={setProposalDialogOpen}>
