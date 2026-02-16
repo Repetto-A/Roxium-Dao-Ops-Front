@@ -57,6 +57,7 @@ export function ConfirmDialog({
           <Button
             variant="outline"
             size="sm"
+            className="text-black hover:text-black disabled:text-black/70"
             disabled={loading}
             onClick={onCancel}
           >

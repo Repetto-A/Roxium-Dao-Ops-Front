@@ -5,7 +5,7 @@ const FEATURES = [
   {
     title: "DAO-first, on-chain",
     description:
-      "Each DAO, proposal and task is stored as an Vetra entity, keeping history and structure at the data layer.",
+      "Each DAO, proposal and task is stored as a Vetra entity, keeping history and structure at the data layer.",
   },
   {
     title: "Real TTL and deadlines",
@@ -26,28 +26,30 @@ const FEATURES = [
 
 export function Features() {
   return (
-    <section id="features" className="py-12">
+    <section id="features" className="py-16 md:py-20">
       <Container>
-        <h2 className="text-xl font-semibold text-slate-50 sm:text-2xl">
-          What problem does this board solve?
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm text-slate-300">
-          Many DAOs live in docs, Discord and spreadsheets. Here the goal is to
-          anchor the operational structure in Vetra, but keep it usable for
-          human beings: create, read and connect DAOs, proposals and tasks from
-          a modern frontend.
-        </p>
+        <div className="space-y-1">
+          <h2 className="text-xl font-bold text-foreground sm:text-2xl">
+            What problem does this board solve?
+          </h2>
+          <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Many DAOs live in docs, Discord and spreadsheets. Here the goal is to
+            anchor the operational structure in Vetra, but keep it usable for
+            human beings: create, read and connect DAOs, proposals and tasks from
+            a modern frontend.
+          </p>
+        </div>
 
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           {FEATURES.map((f) => (
             <div
               key={f.title}
-              className="rounded-lg border border-white/10 bg-white/5 p-4"
+              className="rounded-xl border border-border/80 bg-card p-5 transition-colors hover:border-border"
             >
-              <h3 className="text-sm font-semibold text-emerald-300">
+              <h3 className="text-sm font-semibold text-foreground">
                 {f.title}
               </h3>
-              <p className="mt-2 text-xs text-slate-200 sm:text-sm">
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                 {f.description}
               </p>
             </div>

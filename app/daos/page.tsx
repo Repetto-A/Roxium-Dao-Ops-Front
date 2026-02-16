@@ -1,10 +1,8 @@
 "use client";
 
 import { useDaos } from "@/hooks/useDaos";
-import { useUpdateDao, useDeleteDao } from "@/hooks/useDaos";
 import { DaoCreateForm } from "@/components/dao/DaoCreateForm";
 import { DaoList } from "@/components/dao/DaoList";
-import { useToast } from "@/components/ui/toast";
 
 import { Container } from "@/components/common/Container";
 import { SiteHeader } from "@/components/layout/SiteHeader";
@@ -12,32 +10,9 @@ import { SiteFooter } from "@/components/layout/SiteFooter";
 
 export default function DaosPage() {
   const { daos, loading, error, refetch } = useDaos();
-  const { mutate: updateDao } = useUpdateDao();
-  const { mutate: deleteDao } = useDeleteDao();
-  const { toast } = useToast();
 
   async function handleReload(): Promise<void> {
     await refetch();
-  }
-
-  async function handleUpdateDao(daoId: string, input: { name?: string; description?: string }) {
-    try {
-      await updateDao(daoId, input);
-      toast({ title: "DAO updated", description: "Changes saved successfully.", variant: "success" });
-      await refetch();
-    } catch {
-      toast({ title: "Error", description: "Failed to update DAO.", variant: "error" });
-    }
-  }
-
-  async function handleDeleteDao(daoId: string) {
-    try {
-      await deleteDao(daoId);
-      toast({ title: "DAO archived", description: "DAO has been archived.", variant: "success" });
-      await refetch();
-    } catch {
-      toast({ title: "Error", description: "Failed to archive DAO.", variant: "error" });
-    }
   }
 
   return (
@@ -64,8 +39,6 @@ export default function DaosPage() {
                 loading={loading}
                 error={error}
                 onReload={handleReload}
-                onUpdate={handleUpdateDao}
-                onDelete={handleDeleteDao}
               />
             </div>
           </div>

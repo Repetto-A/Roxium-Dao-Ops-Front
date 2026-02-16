@@ -22,9 +22,18 @@ import { TaskList } from "@/components/task/TaskList";
 import { Container } from "@/components/common/Container";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 import type { ProposalStatus, TaskStatus } from "@/lib/vetra/types";
 import { getStatusLabel } from "@/lib/status";
+import { Plus } from "lucide-react";
 
 export default function DaoBoardPage() {
   const params = useParams<{ daoKey?: string }>();
@@ -46,6 +55,8 @@ export default function DaoBoardPage() {
   const [userSelectedProposalKey, setUserSelectedProposalKey] = useState<
     string | null
   >(null);
+  const [proposalDialogOpen, setProposalDialogOpen] = useState(false);
+  const [taskDialogOpen, setTaskDialogOpen] = useState(false);
 
   // Selected proposal (user → first → null)
   const selectedProposalKey = useMemo<string | null>(() => {
@@ -137,10 +148,10 @@ export default function DaoBoardPage() {
   async function handleDeleteDao(daoId: string) {
     try {
       await deleteDaoMutate(daoId);
-      toast({ title: "DAO archived", description: "DAO has been archived.", variant: "success" });
+      toast({ title: "DAO deleted", description: "DAO has been permanently deleted.", variant: "success" });
       router.push("/daos");
     } catch {
-      toast({ title: "Error", description: "Failed to archive DAO.", variant: "error" });
+      toast({ title: "Error", description: "Failed to delete DAO.", variant: "error" });
     }
   }
 
@@ -162,13 +173,13 @@ export default function DaoBoardPage() {
   async function handleDeleteProposal(proposalId: string) {
     try {
       await deleteProposalMutate(proposalId);
-      toast({ title: "Proposal archived", description: "Proposal has been archived.", variant: "success" });
+      toast({ title: "Proposal deleted", description: "Proposal has been permanently deleted.", variant: "success" });
       if (selectedProposalKey === proposalId) {
         setUserSelectedProposalKey(null);
       }
       await refetch();
     } catch {
-      toast({ title: "Error", description: "Failed to archive proposal.", variant: "error" });
+      toast({ title: "Error", description: "Failed to delete proposal.", variant: "error" });
     }
   }
 
@@ -190,17 +201,17 @@ export default function DaoBoardPage() {
   async function handleDeleteTask(taskId: string) {
     try {
       await deleteTaskMutate(taskId);
-      toast({ title: "Task archived", description: "Task has been archived.", variant: "success" });
+      toast({ title: "Task deleted", description: "Task has been permanently deleted.", variant: "success" });
       await refetch();
     } catch {
-      toast({ title: "Error", description: "Failed to archive task.", variant: "error" });
+      toast({ title: "Error", description: "Failed to delete task.", variant: "error" });
     }
   }
 
   // If there's no daoKey in the URL
   if (!daoKey) {
     return (
-      <div className="flex min-h-screen flex-col bg-[#050816] text-slate-100">
+      <div className="flex min-h-screen flex-col bg-background text-foreground">
         <SiteHeader />
         <main className="flex-1 py-8">
           <Container>
@@ -215,6 +226,7 @@ export default function DaoBoardPage() {
   }
 
   const hasDao = !!dao;
+  const canCreateTask = proposals.length > 0 && !!selectedProposalKey;
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -255,8 +267,18 @@ export default function DaoBoardPage() {
               </div>
 
               <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_minmax(0,1fr)]">
-                {/* Column 1: Create Proposal */}
-                <ProposalCreateForm daoId={daoKey} onCreated={handleReload} />
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-6 w-1 rounded-full bg-primary" />
+                      <h2 className="text-2xl font-bold text-primary">Create Proposal</h2>
+                    </div>
+                    <Button onClick={() => setProposalDialogOpen(true)}>
+                      <Plus className="size-4" />
+                      Create Proposals
+                    </Button>
+                  </div>
+                </div>
 
                 {/* Column 2: Proposal list */}
                 <ProposalList
@@ -279,17 +301,63 @@ export default function DaoBoardPage() {
                     loading={loading}
                     error={error}
                     selectedProposalKey={selectedProposalKey}
+                    headerAction={
+                      canCreateTask ? (
+                        <Button onClick={() => setTaskDialogOpen(true)}>
+                          <Plus className="size-4" />
+                          Create Task
+                        </Button>
+                      ) : undefined
+                    }
                     onStatusChange={handleTaskStatusChange}
                     onUpdate={handleUpdateTask}
                     onDelete={handleDeleteTask}
                   />
+                </div>
+              </div>
+
+              <Dialog open={proposalDialogOpen} onOpenChange={setProposalDialogOpen}>
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-bold text-foreground">
+                      Create Proposal
+                    </DialogTitle>
+                    <DialogDescription className="text-sm text-muted-foreground/90">
+                      Create a work, budget, or decision proposal for this DAO.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <ProposalCreateForm
+                    daoId={daoKey}
+                    hideSectionHeader
+                    onCreated={async () => {
+                      await handleReload();
+                      setProposalDialogOpen(false);
+                    }}
+                  />
+                </DialogContent>
+              </Dialog>
+
+              <Dialog open={taskDialogOpen} onOpenChange={setTaskDialogOpen}>
+                <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+                  <DialogHeader>
+                    <DialogTitle className="text-2xl font-bold text-foreground">
+                      Create Task
+                    </DialogTitle>
+                    <DialogDescription className="text-sm text-muted-foreground/90">
+                      Create a task for the selected proposal.
+                    </DialogDescription>
+                  </DialogHeader>
                   <TaskCreateForm
                     daoId={daoKey}
                     proposalId={selectedProposalKey}
-                    onCreated={handleReload}
+                    hideSectionHeader
+                    onCreated={async () => {
+                      await handleReload();
+                      setTaskDialogOpen(false);
+                    }}
                   />
-                </div>
-              </div>
+                </DialogContent>
+              </Dialog>
             </>
           )}
         </Container>

@@ -4,7 +4,7 @@
 import { NextResponse } from "next/server";
 import { gql } from "@/lib/vetra/graphql-client";
 import { mapProposal, type VetraDocument, type ProposalState } from "@/lib/vetra/mappers";
-import { GET_PROPOSAL, SET_PROPOSAL_DETAILS, UPDATE_PROPOSAL_STATUS } from "@/lib/vetra/queries";
+import { GET_PROPOSAL, SET_PROPOSAL_DETAILS, DELETE_DOCUMENT } from "@/lib/vetra/queries";
 
 const DRIVE_ID = process.env.VETRA_DRIVE_ID ?? "preview-81d3e4ae";
 
@@ -18,8 +18,8 @@ interface SetProposalDetailsResponse {
   Proposal_setProposalDetails: number;
 }
 
-interface UpdateProposalStatusResponse {
-  Proposal_updateProposalStatus: number;
+interface DeleteDocumentResponse {
+  deleteDocument: unknown;
 }
 
 // PATCH /api/vetra/proposals/[proposalId] - Update proposal details
@@ -67,7 +67,7 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/vetra/proposals/[proposalId] - Delete proposal (soft-delete via ARCHIVED status)
+// DELETE /api/vetra/proposals/[proposalId] - Hard delete proposal
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ proposalId: string }> }
@@ -75,17 +75,10 @@ export async function DELETE(
   try {
     const { proposalId } = await params;
 
-    // Set proposal status to ARCHIVED (soft delete)
-    await gql<UpdateProposalStatusResponse>(
-      UPDATE_PROPOSAL_STATUS,
-      {
-        docId: proposalId,
-        driveId: DRIVE_ID,
-        input: {
-          status: "ARCHIVED"
-        }
-      },
-      "/graphql/proposal"
+    await gql<DeleteDocumentResponse>(
+      DELETE_DOCUMENT,
+      { id: proposalId },
+      "/graphql/system"
     );
 
     return NextResponse.json({ deleted: true });

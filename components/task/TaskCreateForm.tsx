@@ -21,12 +21,14 @@ export interface TaskCreateFormProps {
   daoId: string;
   proposalId: string | null;
   onCreated?: () => void | Promise<void>;
+  hideSectionHeader?: boolean;
 }
 
 export function TaskCreateForm({
   daoId,
   proposalId,
   onCreated,
+  hideSectionHeader = false,
 }: TaskCreateFormProps) {
   const { mutate: createTask, loading, error } = useCreateTask();
   const { toast } = useToast();
@@ -84,10 +86,12 @@ export function TaskCreateForm({
 
   return (
     <div>
-      <SectionHeader
-        title="Create Task"
-        variant="create"
-      />
+      {!hideSectionHeader && (
+        <SectionHeader
+          title="Create Task"
+          variant="create"
+        />
+      )}
       <Card className="border-l-2 border-l-primary">
         <CardHeader>
           <CardTitle>New Task</CardTitle>
