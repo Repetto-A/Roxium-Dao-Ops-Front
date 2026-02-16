@@ -2,19 +2,19 @@
 
 import { FormEvent, useState } from "react";
 import { useCreateDao } from "@/hooks/useDaos";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
-import { SectionHeader } from "@/components/common/SectionHeader";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 export interface DaoCreateFormProps {
   onCreated?: () => void | Promise<void>;
@@ -24,6 +24,7 @@ export function DaoCreateForm({ onCreated }: DaoCreateFormProps) {
   const { mutate: createDao, loading, error } = useCreateDao();
   const { toast } = useToast();
 
+  const [open, setOpen] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
@@ -45,6 +46,7 @@ export function DaoCreateForm({ onCreated }: DaoCreateFormProps) {
 
       setName("");
       setDescription("");
+      setOpen(false);
 
       if (onCreated) {
         const maybePromise = onCreated();
@@ -58,21 +60,20 @@ export function DaoCreateForm({ onCreated }: DaoCreateFormProps) {
   }
 
   return (
-    <div>
-      <SectionHeader
-        title="Create a DAO"
-        variant="create"
-      />
-      <Card className="border-l-2 border-l-primary">
-        <CardHeader>
-          <CardTitle>New DAO</CardTitle>
-          <CardDescription>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="lg">Create DAO</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>New DAO</DialogTitle>
+          <DialogDescription>
             Define the space where proposals and operational tasks will be
             grouped.
-          </CardDescription>
-        </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4 pt-2">
           <div className="space-y-2">
             <label htmlFor="dao-name" className="text-sm font-semibold text-foreground">
               DAO name
@@ -101,19 +102,22 @@ export function DaoCreateForm({ onCreated }: DaoCreateFormProps) {
           {error && (
             <p className="text-sm text-destructive">Error creating DAO: {error}</p>
           )}
-        </CardContent>
-        <CardFooter className="mt-2">
-          <Button
-            type="submit"
-            size="lg"
-            disabled={loading || !name.trim()}
-            className="w-full sm:w-auto"
-          >
-            {loading ? "Creating DAO..." : "Create DAO"}
-          </Button>
-        </CardFooter>
-      </form>
-      </Card>
-    </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <DialogClose asChild>
+              <Button type="button" variant="outline" disabled={loading}>
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              type="submit"
+              disabled={loading || !name.trim()}
+            >
+              {loading ? "Creating DAO..." : "Create DAO"}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }
