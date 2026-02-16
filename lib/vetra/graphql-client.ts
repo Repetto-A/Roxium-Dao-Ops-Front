@@ -14,7 +14,9 @@ export async function gql<T>(
   variables?: Record<string, unknown>,
   endpoint = "/d/graphql", // Default to supergraph, or use /graphql/dao, /graphql/proposal, /graphql/task
 ): Promise<T> {
-  const url = `${VETRA_BASE_URL}${endpoint}`;
+  const normalizedBaseUrl = VETRA_BASE_URL.replace(/\/+$/, "");
+  const normalizedEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  const url = `${normalizedBaseUrl}${normalizedEndpoint}`;
 
   const res = await fetch(url, {
     method: "POST",

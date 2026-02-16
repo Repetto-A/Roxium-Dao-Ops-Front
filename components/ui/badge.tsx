@@ -17,22 +17,22 @@ const badgeVariants = cva(
           "border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 shadow-sm",
         outline:
           "text-foreground border-border/60 [a&]:hover:bg-muted/50 [a&]:hover:border-border",
-        // Proposal statuses - true black and white contrast
+        // Proposal statuses - soft violet-forward accents
         "status-draft":
-          "border-white bg-black text-white shadow-md",
+          "border-violet-300 bg-violet-700 text-white shadow-sm",
         "status-open":
-          "border-white bg-white text-black shadow-md font-semibold",
+          "border-violet-200 bg-violet-100 text-violet-900 shadow-sm font-semibold",
         "status-closed":
-          "border-white bg-gray-800 text-white shadow-md",
+          "border-indigo-300 bg-indigo-700 text-white shadow-sm",
         "status-archived":
-          "border-gray-400 bg-gray-300 text-black shadow-md",
-        // Task statuses - true black and white contrast
+          "border-slate-300 bg-slate-100 text-slate-700 shadow-sm",
+        // Task statuses - aligned with board columns
         "status-todo":
-          "border-white bg-black text-white shadow-md",
+          "border-violet-300 bg-violet-700 text-white shadow-sm",
         "status-progress":
-          "border-white bg-white text-black shadow-md font-semibold",
+          "border-indigo-200 bg-indigo-100 text-indigo-900 shadow-sm font-semibold",
         "status-done":
-          "border-gray-400 bg-gray-300 text-black shadow-md",
+          "border-fuchsia-200 bg-fuchsia-100 text-fuchsia-900 shadow-sm",
       },
     },
     defaultVariants: {
