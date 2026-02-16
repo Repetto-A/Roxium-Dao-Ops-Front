@@ -111,7 +111,6 @@ export function TaskList({
     <div>
       <SectionHeader
         title="Tasks"
-        description={!loading && selectedProposalKey ? `${tasks.length} ${tasks.length === 1 ? 'task' : 'tasks'} for this proposal` : undefined}
         variant="create"
         titleClassName="text-foreground"
         action={headerAction}

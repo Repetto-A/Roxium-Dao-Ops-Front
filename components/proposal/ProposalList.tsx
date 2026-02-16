@@ -118,7 +118,6 @@ export function ProposalList({
     <div>
       <SectionHeader
         title="Proposals"
-        description={!loading && selectedProposalKey ? `${proposals.length} ${proposals.length === 1 ? 'proposal' : 'proposals'} for this DAO` : undefined}
         variant="create"
         titleClassName="text-foreground"
       />

@@ -20,6 +20,7 @@ import { TaskCreateForm } from "@/components/task/TaskCreateForm";
 import { TaskList } from "@/components/task/TaskList";
 
 import { Container } from "@/components/common/Container";
+import { SectionHeader } from "@/components/common/SectionHeader";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 import { Button } from "@/components/ui/button";
@@ -148,10 +149,10 @@ export default function DaoBoardPage() {
   async function handleDeleteDao(daoId: string) {
     try {
       await deleteDaoMutate(daoId);
-      toast({ title: "DAO archived", description: "DAO has been archived.", variant: "success" });
+      toast({ title: "DAO deleted", description: "DAO has been permanently deleted.", variant: "success" });
       router.push("/daos");
     } catch {
-      toast({ title: "Error", description: "Failed to archive DAO.", variant: "error" });
+      toast({ title: "Error", description: "Failed to delete DAO.", variant: "error" });
     }
   }
 
@@ -173,13 +174,13 @@ export default function DaoBoardPage() {
   async function handleDeleteProposal(proposalId: string) {
     try {
       await deleteProposalMutate(proposalId);
-      toast({ title: "Proposal archived", description: "Proposal has been archived.", variant: "success" });
+      toast({ title: "Proposal deleted", description: "Proposal has been permanently deleted.", variant: "success" });
       if (selectedProposalKey === proposalId) {
         setUserSelectedProposalKey(null);
       }
       await refetch();
     } catch {
-      toast({ title: "Error", description: "Failed to archive proposal.", variant: "error" });
+      toast({ title: "Error", description: "Failed to delete proposal.", variant: "error" });
     }
   }
 
@@ -201,17 +202,17 @@ export default function DaoBoardPage() {
   async function handleDeleteTask(taskId: string) {
     try {
       await deleteTaskMutate(taskId);
-      toast({ title: "Task archived", description: "Task has been archived.", variant: "success" });
+      toast({ title: "Task deleted", description: "Task has been permanently deleted.", variant: "success" });
       await refetch();
     } catch {
-      toast({ title: "Error", description: "Failed to archive task.", variant: "error" });
+      toast({ title: "Error", description: "Failed to delete task.", variant: "error" });
     }
   }
 
   // If there's no daoKey in the URL
   if (!daoKey) {
     return (
-      <div className="flex min-h-screen flex-col bg-[#050816] text-slate-100">
+      <div className="flex min-h-screen flex-col bg-background text-foreground">
         <SiteHeader />
         <main className="flex-1 py-8">
           <Container>
@@ -267,18 +268,17 @@ export default function DaoBoardPage() {
               </div>
 
               <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)_minmax(0,1fr)]">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="h-6 w-1 rounded-full bg-primary" />
-                      <h2 className="text-2xl font-bold text-primary">Create Proposal</h2>
-                    </div>
+                <SectionHeader
+                  title="Create Proposal"
+                  variant="create"
+                  titleClassName="text-foreground"
+                  action={
                     <Button onClick={() => setProposalDialogOpen(true)}>
                       <Plus className="size-4" />
                       Create Proposals
                     </Button>
-                  </div>
-                </div>
+                  }
+                />
 
                 {/* Column 2: Proposal list */}
                 <ProposalList
@@ -295,25 +295,23 @@ export default function DaoBoardPage() {
                 />
 
                 {/* Column 3: Tasks for the selected proposal */}
-                <div className="space-y-6">
-                  <TaskList
-                    tasks={tasksForSelectedProposal}
-                    loading={loading}
-                    error={error}
-                    selectedProposalKey={selectedProposalKey}
-                    headerAction={
-                      canCreateTask ? (
-                        <Button onClick={() => setTaskDialogOpen(true)}>
-                          <Plus className="size-4" />
-                          Create Task
-                        </Button>
-                      ) : undefined
-                    }
-                    onStatusChange={handleTaskStatusChange}
-                    onUpdate={handleUpdateTask}
-                    onDelete={handleDeleteTask}
-                  />
-                </div>
+                <TaskList
+                  tasks={tasksForSelectedProposal}
+                  loading={loading}
+                  error={error}
+                  selectedProposalKey={selectedProposalKey}
+                  headerAction={
+                    canCreateTask ? (
+                      <Button onClick={() => setTaskDialogOpen(true)}>
+                        <Plus className="size-4" />
+                        Create Task
+                      </Button>
+                    ) : undefined
+                  }
+                  onStatusChange={handleTaskStatusChange}
+                  onUpdate={handleUpdateTask}
+                  onDelete={handleDeleteTask}
+                />
               </div>
 
               <Dialog open={proposalDialogOpen} onOpenChange={setProposalDialogOpen}>

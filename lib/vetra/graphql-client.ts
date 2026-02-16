@@ -16,12 +16,6 @@ export async function gql<T>(
 ): Promise<T> {
   const url = `${VETRA_BASE_URL}${endpoint}`;
 
-  console.log("[GraphQL] Request:", {
-    BACKEND_URL: process.env.BACKEND_URL,
-    VETRA_BASE_URL,
-    endpoint,
-    fullUrl: url,
-  });
   const res = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
