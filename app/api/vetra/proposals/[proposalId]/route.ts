@@ -3,8 +3,8 @@
 
 import { NextResponse } from "next/server";
 import { gql } from "@/lib/vetra/graphql-client";
-import { mapProposal, type VetraDocument, type ProposalState } from "@/lib/vetra/mappers";
-import { GET_PROPOSAL, SET_PROPOSAL_DETAILS, DELETE_DOCUMENT } from "@/lib/vetra/queries";
+import { mapProposal, mapTask, type VetraDocument, type ProposalState, type TaskState } from "@/lib/vetra/mappers";
+import { GET_PROPOSAL, SET_PROPOSAL_DETAILS, GET_TASKS, DELETE_DOCUMENT } from "@/lib/vetra/queries";
 
 const DRIVE_ID = process.env.VETRA_DRIVE_ID ?? "preview-81d3e4ae";
 
@@ -20,6 +20,12 @@ interface SetProposalDetailsResponse {
 
 interface DeleteDocumentResponse {
   deleteDocument: unknown;
+}
+
+interface GetTasksResponse {
+  Task: {
+    getDocuments: VetraDocument<TaskState>[];
+  };
 }
 
 // PATCH /api/vetra/proposals/[proposalId] - Update proposal details
@@ -67,7 +73,7 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/vetra/proposals/[proposalId] - Hard delete proposal
+// DELETE /api/vetra/proposals/[proposalId] - Hard delete proposal + cascade delete all tasks
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ proposalId: string }> }
@@ -75,13 +81,37 @@ export async function DELETE(
   try {
     const { proposalId } = await params;
 
+    // Fetch all tasks belonging to this proposal
+    const tasksData = await gql<GetTasksResponse>(
+      GET_TASKS,
+      { driveId: DRIVE_ID },
+      "/graphql/task"
+    );
+
+    const tasks = tasksData.Task.getDocuments
+      .map(mapTask)
+      .filter(t => t.proposalId === proposalId);
+
+    // Hard delete all tasks first (children)
+    for (const task of tasks) {
+      await gql<DeleteDocumentResponse>(
+        DELETE_DOCUMENT,
+        { id: task.id },
+        "/graphql/system"
+      );
+    }
+
+    // Hard delete the proposal itself
     await gql<DeleteDocumentResponse>(
       DELETE_DOCUMENT,
       { id: proposalId },
       "/graphql/system"
     );
 
-    return NextResponse.json({ deleted: true });
+    return NextResponse.json({
+      deleted: true,
+      deletedTasks: tasks.length,
+    });
   } catch (error) {
     const resolvedParams = await params;
     console.error(`[API /vetra/proposals/${resolvedParams.proposalId} DELETE]`, error);

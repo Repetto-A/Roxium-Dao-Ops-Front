@@ -57,9 +57,9 @@ export function SiteHeader({ breadcrumbs }: SiteHeaderProps) {
               >
                 How it works
               </a>
-              <a href="#dev" className="text-primary hover:text-primary/80 transition-colors font-medium">
-                For devs
-              </a>
+              <Link href="/daos" className="text-primary hover:text-primary/80 transition-colors font-medium">
+                Go to DAOs
+              </Link>
             </nav>
           )}
         </div>

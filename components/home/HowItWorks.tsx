@@ -44,7 +44,7 @@ export function HowItWorks() {
             <p className="mb-3 text-xs font-medium uppercase tracking-widest text-muted-foreground">
               Dev flow
             </p>
-            <pre className="whitespace-pre-wrap font-mono text-xs leading-relaxed text-foreground">
+            <pre className="overflow-x-auto whitespace-pre-wrap font-mono text-xs leading-relaxed text-foreground">
               {`// 1) Create DAO
 POST /api/vetra/daos
 
