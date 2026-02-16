@@ -5,18 +5,13 @@ import { ArrowRight } from "lucide-react";
 
 export function Hero() {
   return (
-    <section className="border-b border-border py-20 md:py-28">
+    <section className="border-b border-border py-12 md:py-16">
       <Container>
         <div className="flex flex-col gap-12 md:flex-row md:items-center md:justify-between">
-          <div className="max-w-xl space-y-6">
-            <p className="inline-flex items-center gap-2 rounded-md border border-border px-2.5 py-1 text-xs font-medium uppercase tracking-widest text-muted-foreground">
-              <span className="size-1.5 rounded-full bg-foreground" />
-              On-chain DAO Ops
-            </p>
-
+          <div className="max-w-xl space-y-5">
             <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl text-balance">
-              Orchestrate your DAOs, proposals and tasks{" "}
-              <span className="text-muted-foreground">on top of Vetra</span>.
+              Turn DAO decisions into trackable,{" "}
+              <span className="text-muted-foreground">on-chain workflows</span>.
             </h1>
 
             <p className="text-base leading-relaxed text-muted-foreground">
@@ -49,12 +44,12 @@ export function Hero() {
                 href="/daos"
                 className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary/90"
               >
-                Start building
+                Create your first DAO
                 <ArrowRight className="size-4" />
               </Link>
               <a
                 href="#how-it-works"
-                className="inline-flex items-center gap-2 rounded-lg border border-border px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted/50"
+                className="inline-flex items-center gap-2 rounded-lg border border-border bg-background/80 px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted/50"
               >
                 See how it works
               </a>
@@ -66,7 +61,7 @@ export function Hero() {
               <p className="mb-3 text-xs font-medium uppercase tracking-widest text-muted-foreground">
                 Structure
               </p>
-              <pre className="max-h-80 overflow-auto font-mono text-xs leading-relaxed text-foreground">
+              <pre className="max-h-80 overflow-x-auto font-mono text-xs leading-relaxed text-foreground">
                 {`dao: Roxium DAO Ops
   \u251C\u2500 proposal: "Daily standup at 9:30?"
   \u2502    \u251C\u2500 task: "Update calendar"
@@ -74,7 +69,7 @@ export function Hero() {
   \u2514\u2500 proposal: "New PR review policy"
        \u2514\u2500 task: "Configure rules in GitHub"
 
-storage: Vetra \u00B7 Mendoza Testnet
+storage: Vetra
 TTL-aware \u00B7 Queryable \u00B7 Subscribable`}
               </pre>
             </div>
